@@ -1,14 +1,6 @@
 .App {
-    text-align: center;
-}
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-h1,
-h2 {
-    text-align: center;
-    color: rgb(213, 78, 78);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 16px;
+    padding-bottom: 24px;
 }
