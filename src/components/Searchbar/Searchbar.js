@@ -5,10 +5,11 @@ class SearchForm extends Component {
     state = { query: '' };
 
     handleChange = e => {
-        this.setState({ query: e.currentTarget });
+        this.setState({ query: e.currentTarget.value });
     };
     handleSubmit = e => {
         e.preventDefault();
+
         this.props.onSubmit(this.state.query);
 
         this.setState({ query: '' });
@@ -25,8 +26,8 @@ class SearchForm extends Component {
                     <input
                         className={s.SearchFormInput}
                         type="text"
-                        autocomplete="off"
-                        autofocus
+                        autoComplete="off"
+                        autoFocus
                         value={this.state.query}
                         placeholder="Search images and photos"
                         onChange={this.handleChange}
