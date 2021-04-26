@@ -16,7 +16,9 @@ class App extends Component {
         currentPage: 1,
         searchQuery: '',
         isLoading: false,
+        error: null,
     };
+
     componentDidUpdate(prevProps, prevState) {
         if (prevState.searchQuery !== this.state.searchQuery) {
             this.fetchImages();
@@ -28,7 +30,12 @@ class App extends Component {
         }));
     };
     onChangeQuery = query => {
-        this.setState({ searchQuery: query, currentPage: 1, gallery: [] });
+        this.setState({
+            searchQuery: query,
+            currentPage: 1,
+            gallery: [],
+            error: null,
+        });
     };
     fetchImages = () => {
         const { currentPage, searchQuery } = this.state;
@@ -36,21 +43,30 @@ class App extends Component {
 
         this.setState({ isLoading: true });
 
-        pixabayApi.fetchImages(options).then(gallery => {
-            this.setState(prevState => ({
-                gallery: [...prevState.gallery, ...gallery],
-                currentPage: prevState.currentPage + 1,
-            }));
-        });
+        pixabayApi
+            .fetchImages(options)
+            .then(gallery => {
+                this.setState(prevState => ({
+                    gallery: [...prevState.gallery, ...gallery],
+                    currentPage: prevState.currentPage + 1,
+                }));
+            })
+            .catch(error => this.setState({ error }))
+            .finally(() => this.setState({ isLoading: false }));
     };
 
     render() {
-        const { showModal, gallery, isLoading } = this.state;
+        const { showModal, gallery, isLoading, error } = this.state;
+        const shouldRenderLoadMoreButton = gallery.length > 0 && !isLoading;
+        console.log(gallery);
         return (
             <>
+                {error && <h1>Error</h1>}
                 <SearchBar onSubmit={this.onChangeQuery} />
                 {showModal && <Modal onClose={this.toggleModal} />}
-                {gallery.length > 0 && <Button onClick={this.fetchImages} />}
+                {shouldRenderLoadMoreButton && (
+                    <Button onClick={this.fetchImages} />
+                )}
                 <ImageGallery gallery={gallery} />
                 {isLoading && (
                     <Loader
