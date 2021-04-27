@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import pixabayApi from '../src/services/pixabayApi';
+import { fetchImages } from '../src/services/pixabayApi';
 import Modal from './components/Modal/Modal';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import SearchBar from './components/Searchbar/Searchbar';
@@ -11,17 +11,18 @@ import './App.css';
 
 class App extends Component {
     state = {
-        showModal: false,
         gallery: [],
         currentPage: 1,
         searchQuery: '',
         isLoading: false,
         error: null,
+        selectedImg: '',
+        showModal: false,
     };
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.searchQuery !== this.state.searchQuery) {
-            this.fetchImages();
+            this.getImages();
         }
     }
     toggleModal = () => {
@@ -35,39 +36,59 @@ class App extends Component {
             currentPage: 1,
             gallery: [],
             error: null,
+            selectedImg: '',
+            showModal: false,
         });
     };
-    fetchImages = () => {
+    getImages = () => {
         const { currentPage, searchQuery } = this.state;
         const options = { currentPage, searchQuery };
 
         this.setState({ isLoading: true });
 
-        pixabayApi
-            .fetchImages(options)
+        fetchImages(options)
             .then(gallery => {
                 this.setState(prevState => ({
                     gallery: [...prevState.gallery, ...gallery],
                     currentPage: prevState.currentPage + 1,
                 }));
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth',
+                });
             })
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ isLoading: false }));
     };
+    setLargeImg = image => {
+        this.setState({ selectedImg: image.largeImageURL });
+        this.toggleModal();
+    };
 
     render() {
-        const { showModal, gallery, isLoading, error } = this.state;
+        const {
+            showModal,
+            gallery,
+            isLoading,
+            error,
+            selectedImg,
+        } = this.state;
         const shouldRenderLoadMoreButton = gallery.length > 0 && !isLoading;
-        console.log(gallery);
         return (
-            <>
-                {error && <h1>Error</h1>}
+            <div className="App">
                 <SearchBar onSubmit={this.onChangeQuery} />
-                {showModal && <Modal onClose={this.toggleModal} />}
-                {shouldRenderLoadMoreButton && (
-                    <Button onClick={this.fetchImages} />
+                <ImageGallery
+                    gallery={gallery}
+                    setLargeImg={this.setLargeImg}
+                    onClose={this.toggleModal}
+                />
+                {error && <h1>Error</h1>}
+                {showModal && (
+                    <Modal
+                        largeImgUrl={selectedImg}
+                        onClose={this.toggleModal}
+                    />
                 )}
-                <ImageGallery gallery={gallery} />
                 {isLoading && (
                     <Loader
                         type="Puff"
@@ -77,7 +98,10 @@ class App extends Component {
                         timeout={3000} //3 secs
                     />
                 )}
-            </>
+                {shouldRenderLoadMoreButton && (
+                    <Button onClick={this.getImages} />
+                )}
+            </div>
         );
     }
 }
