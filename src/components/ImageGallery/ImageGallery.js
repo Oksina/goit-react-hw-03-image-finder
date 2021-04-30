@@ -4,16 +4,13 @@ import s from './ImageGallery.module.css';
 
 class ImageGallery extends Component {
     render() {
-        const { gallery } = this.props;
-        const { setLargeImg } = this;
-        console.log(gallery);
+        const { gallery, setLargeImg, toggleModal } = this.props;
         return (
             <ul className={s.ImageGallery}>
                 <ImageGalleryItem
-                    //key={this.id}
                     gallery={gallery}
-                    largeImageURL={setLargeImg}
-                    //onClose={toggleModal()}
+                    setLargeImg={setLargeImg}
+                    toggleModal={toggleModal}
                 />
             </ul>
         );

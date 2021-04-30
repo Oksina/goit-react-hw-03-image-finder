@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import s from './Searchbar.module.css';
 
 class SearchForm extends Component {
     state = { query: '' };
+    static propTypes = {
+        onSubmit: PropTypes.func.isRequired,
+    };
 
     handleChange = e => {
         this.setState({ query: e.currentTarget.value });

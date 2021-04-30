@@ -5,6 +5,7 @@ import ImageGallery from './components/ImageGallery/ImageGallery';
 import SearchBar from './components/Searchbar/Searchbar';
 import Button from './components/Button/Button';
 import Loader from 'react-loader-spinner';
+import Error from './components/Error/Error';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import './index.css';
 import './App.css';
@@ -61,8 +62,8 @@ class App extends Component {
             .finally(() => this.setState({ isLoading: false }));
     };
     setLargeImg = image => {
-        this.setState({ selectedImg: image.largeImageURL });
         this.toggleModal();
+        this.setState({ selectedImg: image.largeImageURL });
     };
 
     render() {
@@ -80,26 +81,26 @@ class App extends Component {
                 <ImageGallery
                     gallery={gallery}
                     setLargeImg={this.setLargeImg}
-                    onClose={this.toggleModal}
                 />
-                {error && <h1>Error</h1>}
+                {error && <Error message={error.message} />}
+                {isLoading && (
+                    <Loader
+                        type="Puff"
+                        color="#00BFFF"
+                        height={50}
+                        width={50}
+                        timeout={3000}
+                        className="loader"
+                    />
+                )}
+                {shouldRenderLoadMoreButton && (
+                    <Button onClick={this.getImages} />
+                )}
                 {showModal && (
                     <Modal
                         largeImgUrl={selectedImg}
                         onClose={this.toggleModal}
                     />
-                )}
-                {isLoading && (
-                    <Loader
-                        type="Puff"
-                        color="#00BFFF"
-                        height={100}
-                        width={100}
-                        timeout={3000} //3 secs
-                    />
-                )}
-                {shouldRenderLoadMoreButton && (
-                    <Button onClick={this.getImages} />
                 )}
             </div>
         );

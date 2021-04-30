@@ -13,6 +13,3 @@ function fetchImages({ searchQuery = '', currentPage = 1, perPage = 12 }) {
 }
 
 export { fetchImages };
-
-//return fetch(url).then(response => {
-//    return response.data.gallery;
