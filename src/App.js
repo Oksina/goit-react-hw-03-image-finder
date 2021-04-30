@@ -16,9 +16,10 @@ class App extends Component {
         currentPage: 1,
         searchQuery: '',
         isLoading: false,
-        error: null,
+        error: false,
         selectedImg: '',
         showModal: false,
+        fetchLength: null,
     };
 
     componentDidUpdate(prevProps, prevState) {
@@ -36,9 +37,10 @@ class App extends Component {
             searchQuery: query,
             currentPage: 1,
             gallery: [],
-            error: null,
+            error: false,
             selectedImg: '',
             showModal: false,
+            fetchLength: 0,
         });
     };
     getImages = () => {
@@ -52,6 +54,7 @@ class App extends Component {
                 this.setState(prevState => ({
                     gallery: [...prevState.gallery, ...gallery],
                     currentPage: prevState.currentPage + 1,
+                    fetchLength: gallery.length,
                 }));
                 window.scrollTo({
                     top: document.documentElement.scrollHeight,
@@ -73,6 +76,8 @@ class App extends Component {
             isLoading,
             error,
             selectedImg,
+            fetchLength,
+            searchQuery,
         } = this.state;
         const shouldRenderLoadMoreButton = gallery.length > 0 && !isLoading;
         return (
@@ -102,6 +107,12 @@ class App extends Component {
                         onClose={this.toggleModal}
                     />
                 )}
+                <Error
+                    fetchLength={fetchLength}
+                    galleryLength={gallery.length}
+                    searchQuery={searchQuery}
+                    error={error}
+                />
             </div>
         );
     }
